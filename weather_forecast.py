@@ -1,6 +1,11 @@
 import requests
 
-api_key = 'ed5c35152b2bcd72d6790c0ec1943f26'
+
+file_path = "/Users/msorokina/PycharmProjects/API-ключ OpenWeatherMap"
+
+with open(file_path, 'r') as file:
+    api_key = file.read()
+
 city_name = input('Please enter the city: ').capitalize()
 country_code = input('Please enter the country: ').capitalize()
 
