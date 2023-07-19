@@ -1,0 +1,17 @@
+Index: WeatherInfo.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import requests\n\n\nclass GetWeatherException(Exception):\n    pass\n\n\nclass WeatherAPI:\n    def __init__(self, api):\n        self.api = api_key\n        self.base_url = \"http://api.openweathermap.org/data/2.5/find\"\n\n    def get_weather(self, city_name, country_code):\n        params = {\n            'q': f'{city_name},{country_code}',\n            'type': 'like',\n            'units': 'metric',\n            'appid': self.api\n        }\n\n        response = requests.get(self.base_url, params=params)\n        if response.status_code == 200:\n            data = response.json()\n            return data\n        else:\n            raise GetWeatherException('Failed to retrieve weather data.')\n\n    def get_forecast(self, city_name, country_code):\n        try:\n            weather_data = self.get_weather(city_name, country_code)\n\n            if weather_data:\n                forecast = {}\n                result = weather_data['list'][0]\n\n                forecast['current_temperature'] = result['main']['temp']\n                forecast['feels_like'] = result['main']['feels_like']\n                forecast['humidity'] = result['main']['humidity']\n                forecast['wind'] = result['wind']['speed']\n                forecast['condition'] = result['weather'][0]['description']\n\n                return forecast\n            else:\n                raise GetWeatherException(\"Weather data not found.\")\n        except GetWeatherException as e:\n            print(f\"An error occurred: {str(e)}\")\n\n\n# Пример использования\nfile_path = \"/Users/msorokina/PycharmProjects/API-ключ OpenWeatherMap\"\n\nwith open(file_path, 'r') as file:\n    api_key = file.read()\n\nweather_api = WeatherAPI(api_key)\n\ntry:\n    city = input('Please enter the city: ').capitalize()\n    country = input('Please enter the country: ').capitalize()\n    forecast = weather_api.get_forecast(city, country)\n\n    print(\"Weather forecast:\")\n    print(f\"Current temperature: {forecast['current_temperature']}°C\")\n    print(f\"Feels like: {forecast['feels_like']}°C\")\n    print(f\"Humidity: {forecast['humidity']}%\")\n    print(f\"Wind speed: {forecast['wind']} м/с\")\nexcept KeyError:\n    raise GetWeatherException(\"Invalid response format.\")\nexcept GetWeatherException as e:\n    print(f\"An error occurred: {str(e)}\")\nexcept IndexError:\n    print('Incorrect data entered')\n
+===================================================================
+diff --git a/WeatherInfo.py b/WeatherInfo.py
+--- a/WeatherInfo.py	
++++ b/WeatherInfo.py	
+@@ -59,7 +59,7 @@
+     country = input('Please enter the country: ').capitalize()
+     forecast = weather_api.get_forecast(city, country)
+ 
+-    print("Weather forecast:")
++    print(f'Weather forecast for {city}, {country}:')
+     print(f"Current temperature: {forecast['current_temperature']}°C")
+     print(f"Feels like: {forecast['feels_like']}°C")
+     print(f"Humidity: {forecast['humidity']}%")
